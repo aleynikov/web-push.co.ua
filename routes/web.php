@@ -11,6 +11,11 @@
 |
 */
 
+const VAPID = [
+    'publicKey' => 'BFt4kH9ePdoHORYnuGgDnouCNBhAG+0BlXXXLo3Dwb5JqgVMd3p8wKXbUH6zD+3wAfEIQOz3EvjVD8YCNZvTFEA=',
+    'privateKey' => 'LZZcDcdCJl1FxmbHGwzmPWYOCMz3h5NnSJt41Xb5JT8=',
+];
+
 $router->get('/', function () use ($router) {
     return view('index');
 });
@@ -31,13 +36,25 @@ $router->post('/push', function () use ($router) {
     $subscription = $router->app->request->input('subscription');
     $message = $router->app->request->input('message');
 
-    $webPush->sendNotification(\Minishlink\WebPush\Subscription::create($subscription), $message);
+    $status = $webPush->sendNotification(
+        \Minishlink\WebPush\Subscription::create($subscription),
+        $message,
+        true,
+        ['TTL' => (24 * 60 * 60)],
+        [
+            'VAPID' => [
+                'subject' => 'mailto:sender@web-push.co.ua',
+                'publicKey' => VAPID['publicKey'],
+                'privateKey' => VAPID['privateKey'],
+            ],
+        ]
+    );
+
+    return $status ? 'OK' : 'FAILED';
 });
 
 $router->get('/vapidPublicKey', function () use ($router) {
-    // "publicKey":"BFt4kH9ePdoHORYnuGgDnouCNBhAG+0BlXXXLo3Dwb5JqgVMd3p8wKXbUH6zD+3wAfEIQOz3EvjVD8YCNZvTFEA=",
-    // "privateKey":"LZZcDcdCJl1FxmbHGwzmPWYOCMz3h5NnSJt41Xb5JT8="
-
-    return 'BFt4kH9ePdoHORYnuGgDnouCNBhAG+0BlXXXLo3Dwb5JqgVMd3p8wKXbUH6zD+3wAfEIQOz3EvjVD8YCNZvTFEA=';
+//    return \Minishlink\WebPush\VAPID::createVapidKeys();
+    return VAPID['publicKey'];
 });
 
