@@ -27,10 +27,11 @@ $router->get('db-test', function() use ($router) {
 
 $router->post('/push', function () use ($router) {
     $webPush = new \Minishlink\WebPush\WebPush();
-    $webPush->sendNotification(
-        $router->app->request->input('subscription'),
-        $router->app->request->input('message')
-    );
+
+    $subscription = $router->app->request->input('subscription');
+    $message = $router->app->request->input('message');
+
+    $webPush->sendNotification(\Minishlink\WebPush\Subscription::create($subscription), $message);
 });
 
 $router->get('/vapidPublicKey', function () use ($router) {
