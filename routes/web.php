@@ -25,4 +25,18 @@ $router->get('db-test', function() use ($router) {
     return is_null($pdo) ? 'Failed' : 'Success';
 });
 
+$router->post('/push', function () use ($router) {
+    $webPush = new \Minishlink\WebPush\WebPush();
+    $webPush->sendNotification(
+        $router->app->request->input('subscription'),
+        $router->app->request->input('message')
+    );
+});
+
+$router->get('/vapidPublicKey', function () use ($router) {
+    // "publicKey":"BFt4kH9ePdoHORYnuGgDnouCNBhAG+0BlXXXLo3Dwb5JqgVMd3p8wKXbUH6zD+3wAfEIQOz3EvjVD8YCNZvTFEA=",
+    // "privateKey":"LZZcDcdCJl1FxmbHGwzmPWYOCMz3h5NnSJt41Xb5JT8="
+
+    return 'BFt4kH9ePdoHORYnuGgDnouCNBhAG+0BlXXXLo3Dwb5JqgVMd3p8wKXbUH6zD+3wAfEIQOz3EvjVD8YCNZvTFEA=';
+});
 
