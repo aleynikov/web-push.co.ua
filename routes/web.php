@@ -12,5 +12,17 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return view('index');
 });
+
+$router->get('db-test', function() use ($router) {
+    try {
+        $pdo = app('db')->getPdo();
+    } catch (\PDOException $e) {
+        $pdo = null;
+    }
+
+    return is_null($pdo) ? 'Failed' : 'Success';
+});
+
+
